@@ -1,0 +1,8 @@
+{
+  "name": "Remix CineMood",
+  "description": "Your movie-obsessed friend who chats with you about cinema, directors, trivia, and personalized recommendations with natural tone matching and memory.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
