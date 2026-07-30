@@ -2,7 +2,11 @@
 
 > **Talk Movies. Feel Every Scene.**
 
+[![Live Demo](https://img.shields.io/badge/🚀_Live_Demo-cinemate--shudhanshu.ai.studio-red?style=for-the-badge)](https://cinemate-shudhanshu.ai.studio)
+
 CineMate is a movie-obsessed AI companion that chats with you about cinema, directors, trivia, hot takes, and personalized recommendations. Powered by **Google Gemini API**, CineMate detects your emotional tone in real-time, maintains a memory of your movie preferences, and presents rich interactive movie cards for every recommendation.
+
+👉 **Try the Live App:** [https://cinemate-shudhanshu.ai.studio](https://cinemate-shudhanshu.ai.studio)
 
 ---
 
@@ -27,7 +31,14 @@ CineMate is a movie-obsessed AI companion that chats with you about cinema, dire
 
 ---
 
-## 🚀 Quick Start
+## 🌐 Live Demo
+
+You can try the fully deployed application immediately without local setup:
+👉 **[cinemate-shudhanshu.ai.studio](https://cinemate-shudhanshu.ai.studio)**
+
+---
+
+## 🚀 Local Development Setup
 
 ### Prerequisites
 
