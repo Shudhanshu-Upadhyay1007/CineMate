@@ -33,7 +33,7 @@ export const StarterSparks: React.FC<StarterSparksProps> = ({ onSelectSpark }) =
           </p>
         </div>
         <p className="text-xs sm:text-sm text-slate-400 max-w-md mx-auto leading-relaxed pt-1">
-          I'm <span className="text-white font-bold">CineMate</span> — your Indian & global film bestie. Drop your hot takes, your current mood, or what movie you're craving to watch today!
+          I'm <span className="text-white font-bold">CineMate</span> — your ultimate cinema bestie for Hollywood blockbusters, cult classics, A24 indies, and Indian cinema. Drop your hot takes, mood, or what movie you're craving to watch!
         </p>
       </div>
 

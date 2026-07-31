@@ -6,6 +6,7 @@ import { ChatInput } from './components/ChatInput';
 import { StarterSparks } from './components/StarterSparks';
 import { MemorySidebar } from './components/MemorySidebar';
 import { MovieCardModal } from './components/MovieCardModal';
+import { ThreeFilmBackground } from './components/ThreeFilmBackground';
 import { ChatMessageData, MemoryBank, MovieCardData } from './types';
 import { Film, AlertCircle } from 'lucide-react';
 
@@ -260,7 +261,7 @@ export default function App() {
 
       // If voice enabled, speak CineMood's response
       if (isAudioEnabled) {
-        handleSpeak(cineMsgId, reply);
+        handleSpeak(cineMsgId, cleanReply);
       }
     } catch (err: any) {
       console.error('Error sending message:', err);
@@ -274,27 +275,47 @@ export default function App() {
 
   const handleNewChat = () => {
     setMessages([]);
+    localStorage.removeItem(MESSAGES_STORAGE_KEY);
     if ('speechSynthesis' in window) {
       window.speechSynthesis.cancel();
     }
     setSpeakingMessageId(null);
+    setSelectedMovieForModal(null);
     setErrorMsg(null);
   };
 
+  const handleClearChat = () => {
+    if (messages.length === 0) return;
+    if (window.confirm('Are you sure you want to clear all messages in this conversation?')) {
+      setMessages([]);
+      localStorage.removeItem(MESSAGES_STORAGE_KEY);
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+      }
+      setSpeakingMessageId(null);
+      setSelectedMovieForModal(null);
+      setErrorMsg(null);
+    }
+  };
+
   const handleClearMemory = () => {
-    if (window.confirm('Reset all CineMood memory of your preferences?')) {
+    if (window.confirm('Reset all CineMate memory of your movie preferences and takes?')) {
       setMemory({
         moviesMentioned: [],
         userPreferences: [],
         hotTakes: [],
         lastToneDetected: '',
       });
+      localStorage.removeItem(MEMORY_STORAGE_KEY);
       setIsMemoryOpen(false);
     }
   };
 
   return (
     <div className="bg-[#08080a] text-slate-100 h-full h-[100dvh] max-h-[100dvh] w-full w-vw flex overflow-hidden font-sans relative selection:bg-red-600 selection:text-white fixed inset-0">
+      {/* Interactive 3D WebGL Background with Floating Film Symbols */}
+      <ThreeFilmBackground />
+
       {/* Glow Atmospheric Backdrops */}
       <div className="absolute top-[-10%] right-[-10%] w-[500px] h-[500px] bg-red-900/10 rounded-full blur-[120px] pointer-events-none z-0" />
       <div className="absolute bottom-[-10%] left-[-10%] w-[500px] h-[500px] bg-blue-900/10 rounded-full blur-[120px] pointer-events-none z-0" />
@@ -303,6 +324,8 @@ export default function App() {
       <Sidebar
         memory={memory}
         onNewChat={handleNewChat}
+        onClearChat={messages.length > 0 ? handleClearChat : undefined}
+        onClearHistory={handleClearMemory}
         isMobileOpen={isMobileSidebarOpen}
         onCloseMobile={() => setIsMobileSidebarOpen(false)}
       />
@@ -317,6 +340,8 @@ export default function App() {
           isAudioEnabled={isAudioEnabled}
           onToggleAudio={() => setIsAudioEnabled((prev) => !prev)}
           onNewChat={handleNewChat}
+          onClearChat={handleClearChat}
+          onClearHistory={handleClearMemory}
           messageCount={messages.length}
           onToggleMobileSidebar={() => setIsMobileSidebarOpen((prev) => !prev)}
         />
@@ -328,6 +353,21 @@ export default function App() {
               <StarterSparks onSelectSpark={handleSendMessage} />
             ) : (
               <div className="space-y-4">
+                {/* Chat Top Action Bar */}
+                <div className="flex items-center justify-between pb-2 mb-4 border-b border-white/10 text-xs text-slate-400">
+                  <span className="font-mono text-[11px] text-slate-400">
+                    Active Discussion ({messages.length} {messages.length === 1 ? 'message' : 'messages'})
+                  </span>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={handleClearChat}
+                      className="px-2.5 py-1 rounded-lg bg-rose-950/40 hover:bg-rose-900/60 text-rose-300 border border-rose-800/40 transition-colors flex items-center gap-1.5"
+                    >
+                      <span>Clear Chat</span>
+                    </button>
+                  </div>
+                </div>
+
                 {messages.map((msg) => (
                   <ChatMessage
                     key={msg.id}

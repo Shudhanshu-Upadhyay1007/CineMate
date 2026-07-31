@@ -1,5 +1,5 @@
 import React from 'react';
-import { Brain, Volume2, VolumeX, Sparkles, Menu, Plus } from 'lucide-react';
+import { Brain, Volume2, VolumeX, Sparkles, Menu, Plus, Trash2, RotateCcw } from 'lucide-react';
 import { CineMateHeaderBrand } from './CineMateLogo';
 
 interface HeaderProps {
@@ -9,6 +9,8 @@ interface HeaderProps {
   isAudioEnabled: boolean;
   onToggleAudio: () => void;
   onNewChat: () => void;
+  onClearChat?: () => void;
+  onClearHistory?: () => void;
   messageCount: number;
   onToggleMobileSidebar?: () => void;
 }
@@ -20,6 +22,8 @@ export const Header: React.FC<HeaderProps> = ({
   isAudioEnabled,
   onToggleAudio,
   onNewChat,
+  onClearChat,
+  onClearHistory,
   messageCount,
   onToggleMobileSidebar,
 }) => {
@@ -42,7 +46,19 @@ export const Header: React.FC<HeaderProps> = ({
       </div>
 
       {/* Right Controls */}
-      <div className="flex items-center gap-2 sm:gap-2.5">
+      <div className="flex items-center gap-1.5 sm:gap-2.5">
+        {/* CLEAR CHAT BUTTON (Visible when messages exist) */}
+        {messageCount > 0 && onClearChat && (
+          <button
+            onClick={onClearChat}
+            title="Clear current chat messages"
+            className="px-2.5 py-1.5 rounded-full text-xs font-semibold bg-rose-950/50 hover:bg-rose-900/80 text-rose-300 border border-rose-800/40 flex items-center gap-1.5 transition-all active:scale-95 shrink-0"
+          >
+            <Trash2 className="w-3.5 h-3.5 text-rose-400" />
+            <span className="hidden md:inline">Clear Chat</span>
+          </button>
+        )}
+
         {/* NEW CHAT BUTTON */}
         <button
           onClick={onNewChat}
@@ -97,3 +113,4 @@ export const Header: React.FC<HeaderProps> = ({
     </header>
   );
 };
+
