@@ -47,7 +47,7 @@ export const Header: React.FC<HeaderProps> = ({
 
       {/* Right Controls */}
       <div className="flex items-center gap-1.5 sm:gap-2.5">
-        {/* CLEAR CHAT BUTTON (Visible when messages exist) */}
+        {/* CLEAR CHAT BUTTON */}
         {messageCount > 0 && onClearChat && (
           <button
             onClick={onClearChat}
@@ -56,6 +56,18 @@ export const Header: React.FC<HeaderProps> = ({
           >
             <Trash2 className="w-3.5 h-3.5 text-rose-400" />
             <span className="hidden md:inline">Clear Chat</span>
+          </button>
+        )}
+
+        {/* CLEAR HISTORY BUTTON */}
+        {onClearHistory && (
+          <button
+            onClick={onClearHistory}
+            title="Reset memory bank & taste history"
+            className="px-2.5 py-1.5 rounded-full text-xs font-semibold bg-purple-950/40 hover:bg-purple-900/60 text-purple-300 border border-purple-800/40 flex items-center gap-1.5 transition-all active:scale-95 shrink-0"
+          >
+            <RotateCcw className="w-3.5 h-3.5 text-purple-400" />
+            <span className="hidden lg:inline">Clear Memory</span>
           </button>
         )}
 

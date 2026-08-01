@@ -144,13 +144,13 @@ export const Sidebar: React.FC<SidebarProps> = ({
               <Flame className="w-3 h-3 text-red-500" />
               <span>Memory Log</span>
             </p>
-            {hasMemoryItems && onClearHistory && (
+            {onClearHistory && (
               <button
                 onClick={() => {
                   onClearHistory();
                   if (onCloseMobile) onCloseMobile();
                 }}
-                className="text-[10px] text-rose-400 hover:text-rose-300 flex items-center gap-1 bg-rose-950/40 hover:bg-rose-900/60 px-2 py-0.5 rounded-md border border-rose-800/40 transition-colors"
+                className="text-[10px] text-rose-400 hover:text-rose-300 flex items-center gap-1 bg-rose-950/40 hover:bg-rose-900/60 px-2 py-0.5 rounded-md border border-rose-800/40 transition-colors cursor-pointer"
                 title="Clear all logged memory & preferences"
               >
                 <RotateCcw className="w-2.5 h-2.5" />

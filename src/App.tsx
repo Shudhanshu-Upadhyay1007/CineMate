@@ -7,8 +7,9 @@ import { StarterSparks } from './components/StarterSparks';
 import { MemorySidebar } from './components/MemorySidebar';
 import { MovieCardModal } from './components/MovieCardModal';
 import { ThreeFilmBackground } from './components/ThreeFilmBackground';
+import { ClearConfirmModal, ClearType } from './components/ClearConfirmModal';
 import { ChatMessageData, MemoryBank, MovieCardData } from './types';
-import { Film, AlertCircle } from 'lucide-react';
+import { Film, AlertCircle, CheckCircle2 } from 'lucide-react';
 
 const MESSAGES_STORAGE_KEY = 'cinemate_chat_messages_v1';
 const MEMORY_STORAGE_KEY = 'cinemate_memory_bank_v1';
@@ -64,8 +65,17 @@ export default function App() {
   const [speakingMessageId, setSpeakingMessageId] = useState<string | null>(null);
   const [selectedMovieForModal, setSelectedMovieForModal] = useState<MovieCardData | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [clearModalType, setClearModalType] = useState<ClearType>(null);
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   const mainScrollRef = useRef<HTMLDivElement>(null);
+
+  const showToast = (msg: string) => {
+    setToastMessage(msg);
+    setTimeout(() => {
+      setToastMessage((current) => (current === msg ? null : current));
+    }, 3500);
+  };
 
   // Prevent mobile window scrolling from pushing header off screen
   useEffect(() => {
@@ -282,33 +292,59 @@ export default function App() {
     setSpeakingMessageId(null);
     setSelectedMovieForModal(null);
     setErrorMsg(null);
+    showToast('Started a fresh chat session!');
   };
 
-  const handleClearChat = () => {
-    if (messages.length === 0) return;
-    if (window.confirm('Are you sure you want to clear all messages in this conversation?')) {
-      setMessages([]);
-      localStorage.removeItem(MESSAGES_STORAGE_KEY);
-      if ('speechSynthesis' in window) {
-        window.speechSynthesis.cancel();
-      }
-      setSpeakingMessageId(null);
-      setSelectedMovieForModal(null);
-      setErrorMsg(null);
-    }
+  const handleTriggerClearChat = () => {
+    setClearModalType('chat');
   };
 
-  const handleClearMemory = () => {
-    if (window.confirm('Reset all CineMate memory of your movie preferences and takes?')) {
-      setMemory({
-        moviesMentioned: [],
-        userPreferences: [],
-        hotTakes: [],
-        lastToneDetected: '',
-      });
-      localStorage.removeItem(MEMORY_STORAGE_KEY);
-      setIsMemoryOpen(false);
+  const handleTriggerClearMemory = () => {
+    setClearModalType('memory');
+  };
+
+  const handleConfirmClearChat = () => {
+    setMessages([]);
+    localStorage.removeItem(MESSAGES_STORAGE_KEY);
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.cancel();
     }
+    setSpeakingMessageId(null);
+    setSelectedMovieForModal(null);
+    setErrorMsg(null);
+    showToast('Chat messages cleared!');
+  };
+
+  const handleConfirmClearMemory = () => {
+    setMemory({
+      moviesMentioned: [],
+      userPreferences: [],
+      hotTakes: [],
+      lastToneDetected: '',
+    });
+    localStorage.removeItem(MEMORY_STORAGE_KEY);
+    setIsMemoryOpen(false);
+    showToast('Memory history & preferences reset!');
+  };
+
+  const handleConfirmClearEverything = () => {
+    setMessages([]);
+    localStorage.removeItem(MESSAGES_STORAGE_KEY);
+    setMemory({
+      moviesMentioned: [],
+      userPreferences: [],
+      hotTakes: [],
+      lastToneDetected: '',
+    });
+    localStorage.removeItem(MEMORY_STORAGE_KEY);
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.cancel();
+    }
+    setSpeakingMessageId(null);
+    setSelectedMovieForModal(null);
+    setErrorMsg(null);
+    setIsMemoryOpen(false);
+    showToast('All chat & memory history wiped!');
   };
 
   return (
@@ -320,12 +356,20 @@ export default function App() {
       <div className="absolute top-[-10%] right-[-10%] w-[500px] h-[500px] bg-red-900/10 rounded-full blur-[120px] pointer-events-none z-0" />
       <div className="absolute bottom-[-10%] left-[-10%] w-[500px] h-[500px] bg-blue-900/10 rounded-full blur-[120px] pointer-events-none z-0" />
 
+      {/* Toast Notification Banner */}
+      {toastMessage && (
+        <div className="fixed top-20 right-6 z-50 bg-emerald-950/90 border border-emerald-500/40 text-emerald-200 px-4 py-2.5 rounded-xl text-xs font-semibold flex items-center gap-2 shadow-2xl animate-bounce">
+          <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+          <span>{toastMessage}</span>
+        </div>
+      )}
+
       {/* Left Persistent Sidebar (Desktop) / Drawer (Mobile) */}
       <Sidebar
         memory={memory}
         onNewChat={handleNewChat}
-        onClearChat={messages.length > 0 ? handleClearChat : undefined}
-        onClearHistory={handleClearMemory}
+        onClearChat={messages.length > 0 ? handleTriggerClearChat : undefined}
+        onClearHistory={handleTriggerClearMemory}
         isMobileOpen={isMobileSidebarOpen}
         onCloseMobile={() => setIsMobileSidebarOpen(false)}
       />
@@ -340,8 +384,8 @@ export default function App() {
           isAudioEnabled={isAudioEnabled}
           onToggleAudio={() => setIsAudioEnabled((prev) => !prev)}
           onNewChat={handleNewChat}
-          onClearChat={handleClearChat}
-          onClearHistory={handleClearMemory}
+          onClearChat={handleTriggerClearChat}
+          onClearHistory={handleTriggerClearMemory}
           messageCount={messages.length}
           onToggleMobileSidebar={() => setIsMobileSidebarOpen((prev) => !prev)}
         />
@@ -360,10 +404,16 @@ export default function App() {
                   </span>
                   <div className="flex items-center gap-2">
                     <button
-                      onClick={handleClearChat}
+                      onClick={handleTriggerClearChat}
                       className="px-2.5 py-1 rounded-lg bg-rose-950/40 hover:bg-rose-900/60 text-rose-300 border border-rose-800/40 transition-colors flex items-center gap-1.5"
                     >
                       <span>Clear Chat</span>
+                    </button>
+                    <button
+                      onClick={handleTriggerClearMemory}
+                      className="px-2.5 py-1 rounded-lg bg-purple-950/40 hover:bg-purple-900/60 text-purple-300 border border-purple-800/40 transition-colors flex items-center gap-1.5"
+                    >
+                      <span>Reset Memory</span>
                     </button>
                   </div>
                 </div>
@@ -425,7 +475,7 @@ export default function App() {
         isOpen={isMemoryOpen}
         onClose={() => setIsMemoryOpen(false)}
         memory={memory}
-        onClearMemory={handleClearMemory}
+        onClearMemory={handleTriggerClearMemory}
       />
 
       {/* Movie Spotlight Modal */}
@@ -433,6 +483,15 @@ export default function App() {
         movie={selectedMovieForModal}
         onClose={() => setSelectedMovieForModal(null)}
         onAskCineMate={handleSendMessage}
+      />
+
+      {/* Clear Confirmation Custom Modal */}
+      <ClearConfirmModal
+        clearType={clearModalType}
+        onClose={() => setClearModalType(null)}
+        onConfirmChat={handleConfirmClearChat}
+        onConfirmMemory={handleConfirmClearMemory}
+        onConfirmEverything={handleConfirmClearEverything}
       />
     </div>
   );
